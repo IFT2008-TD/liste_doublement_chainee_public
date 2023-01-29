@@ -19,7 +19,7 @@ namespace td3 {
 
         ~Liste();
 
-        const Liste<T> &operator=(const Liste<T> &);
+        Liste<T> &operator=(const Liste<T> &);
 
         void ajouter(const T &, const int &);
 
