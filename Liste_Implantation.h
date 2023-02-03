@@ -10,7 +10,10 @@
 namespace td3 {
 
     template<typename T>
-    Liste<T>::Liste() {}
+    Liste<T>::Liste() : premier(new Noeud), dernier(new Noeud), cardinal(0) {
+        premier->suivant = dernier ;
+        dernier->precedent = premier ;
+    }
 
     template<typename T>
     Liste<T>::Liste(const Liste &source) {
@@ -23,13 +26,23 @@ namespace td3 {
     }
 
     template<typename T>
-    const Liste<T> &Liste<T>::operator=(const Liste<T> &rhs) {
+    Liste<T> &Liste<T>::operator=(const Liste<T> &rhs) {
         return *this;
     }
 
     template<typename T>
     void Liste<T>::ajouter(const T &valeur, const int &position) {
+        if (!positionEstValideEnEcriture(position)) throw std::invalid_argument("ajouter: index non-valide") ;
 
+        auto nouveau = new Noeud(valeur) ;
+        auto courant = trouverAdresseAPosition(position) ;
+
+        nouveau->precedent = courant->precedent ;
+        courant->precedent->suivant = nouveau ;
+        nouveau->suivant = courant ;
+        courant->precedent = nouveau ;
+
+        ++ cardinal ;
     }
 
     template<typename T>
@@ -44,12 +57,12 @@ namespace td3 {
 
     template<typename T>
     int Liste<T>::taille() const {
-        return 0;
+        return cardinal ;
     }
 
     template<typename T>
     bool Liste<T>::estVide() const {
-        return false;
+        return (cardinal == 0) ;
     }
 
     template<typename T>
@@ -75,6 +88,33 @@ namespace td3 {
     template<class U>
     std::ostream &operator<<(std::ostream & os, const Liste<U> &) {
         return os;
+    }
+
+    template<typename T>
+    bool Liste<T>::positionEstValideEnEcriture(int pos) {
+        return ((pos > 0) && (pos <= cardinal + 1)) ;
+    }
+
+    template<typename T>
+    typename Liste<T>::Noeud *Liste<T>::trouverAdresseAPosition(int pos) {
+        Noeud* adresse = premier ;
+        for (int i = 0; i < pos; ++i) adresse = adresse->suivant ;
+        return adresse ;
+    }
+
+    template<typename T>
+    std::string Liste<T>::format() const {
+        if (estVide()) return "[]" ;
+
+        std::ostringstream os ;
+        os << "[" ;
+        for (Noeud* p = premier->suivant ; p != dernier ; p = p->suivant ) {
+            os << p->donnee ;
+            if (p->suivant != dernier) os << ", " ;
+        }
+        os << "]" ;
+
+        return os.str() ;
     }
 
 

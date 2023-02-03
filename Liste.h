@@ -7,6 +7,8 @@
 
 #include <cstddef>
 #include <iostream>
+#include <string>
+#include <sstream>
 
 namespace td3 {
     template<typename T>
@@ -40,6 +42,7 @@ namespace td3 {
 
         template<class U>
         friend std::ostream &operator<<(std::ostream &, const Liste<U> &);
+        std::string format() const ;
 
     private:
 
@@ -50,7 +53,9 @@ namespace td3 {
             Noeud *suivant;
             Noeud *precedent;
 
-            explicit Noeud(const T &data_item, Noeud *next_ptr = 0, Noeud *prev_ptr = 0) :
+            explicit Noeud () : donnee (), suivant (),  precedent () {} ;
+
+            explicit Noeud(const T &data_item, Noeud *next_ptr = nullptr, Noeud *prev_ptr = nullptr) :
                     donnee(data_item), suivant(next_ptr), precedent(prev_ptr) {}
         };
 
@@ -60,6 +65,9 @@ namespace td3 {
         int cardinal;
 
         void verifieInvariant() const;
+        bool positionEstValideEnEcriture(int pos) ;
+        Noeud* trouverAdresseAPosition(int pos) ;
+
 
     };
 
