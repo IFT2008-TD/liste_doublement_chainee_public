@@ -5,7 +5,7 @@
 ### CLion
 
 Dans la fenêtre du sélecteur de projets, choisissez ```Get fromm VCS``` et ensuite saisissez l'adresse du dépôt: 
-```https://github.com/IFT2008-TD/liste_doublement_chainee_etudiant``` cochez ensuite la case ```Trust project```et le projet
+```https://github.com/IFT2008-TD/liste_doublement_chainee_public``` cochez ensuite la case ```Trust project```et le projet
 sera cloné et immédiatement prêt à l'emploi dans CLion.
 
 ### Netbeans
