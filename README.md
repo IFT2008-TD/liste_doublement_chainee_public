@@ -75,3 +75,7 @@ votre implantation:
 - appartient: indique si un élément donné se trouve dans la liste
 - element: retourne l'élément contenu à la position demandée
 - position: retourne la position de l'élément demandé
+
+Remarquez que le code source fourni contient des méthodes privées.  Celles-ci sont simplement des suggestions
+et vous n'êtes pas obligés de les utiliser ou les implanter.  Vous pouvez aussi en utiliser d'autres qui
+vous semblent plus appropriées.
