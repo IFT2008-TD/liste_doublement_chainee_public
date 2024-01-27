@@ -64,9 +64,20 @@ namespace td3 {
         Noeud *dernier;
         int cardinal;
 
-        void verifieInvariant() const;
-        bool positionEstValideEnEcriture(int pos) ;
-        Noeud* trouverAdresseAPosition(int pos) ;
+        bool verifieInvariant() const;
+
+        bool positionEstValideEnEcriture(int pos) const  ;
+        bool positionEstValideEnLecture(int pos) const ;
+        Noeud* trouverAdresseAPosition(int pos) const ;
+        Noeud* revAdresseAPosition(int position) const ;
+        Noeud* adresseDeLaCle(const T& cle) const ;
+
+        void insererDansAdresse(Noeud* noeud, Noeud* adresse) ;
+        void desinsererDeAdresse(Noeud* adresse) ;
+        void copier(const Liste<T>& rhs) ;
+        void effacer() ;
+
+
 
 
     };

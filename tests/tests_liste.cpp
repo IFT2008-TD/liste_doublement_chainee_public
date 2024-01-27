@@ -59,7 +59,7 @@ TEST(Liste, ajouter_deux_elements_ordre_inverse_format_correct) {
     EXPECT_EQ("[43, 42]", l.format()) ;
 }
 
-class ListeTest
+
 
 
 
