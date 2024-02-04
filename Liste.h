@@ -23,11 +23,11 @@ namespace td3 {
 
         Liste<T> &operator=(Liste<T> );
 
-        void ajouter(const T &, const int &);
+        void ajouter(const T &, size_t);
 
         void enleverEl(const T &);
 
-        void enlever(const int &);
+        void enlever(size_t);
 
         int taille() const;
 
@@ -35,7 +35,7 @@ namespace td3 {
 
         bool appartient(const T &) const;
 
-        T element(const int &) const;
+        T element(size_t) const;
 
         int position(const T &) const;
 
@@ -64,21 +64,13 @@ namespace td3 {
         Noeud *dernier;
         int cardinal;
 
-        bool verifieInvariant() const;
-
-        bool positionEstValideEnEcriture(int pos) const  ;
-        bool positionEstValideEnLecture(int pos) const ;
-        Noeud* trouverAdresseAPosition(int pos) const ;
-        Noeud* revAdresseAPosition(int position) const ;
+        bool positionEstValideEnEcriture(size_t pos) const  ;
+        bool positionEstValideEnLecture(size_t pos) const ;
+        Noeud* trouverAdresseAPosition(size_t pos) const ;
         Noeud* adresseDeLaCle(const T& cle) const ;
 
-        void insererDansAdresse(Noeud* noeud, Noeud* adresse) ;
-        void desinsererDeAdresse(Noeud* adresse) ;
-        void copier(const Liste<T>& rhs) ;
-        void effacer() ;
-
-
-
+        void insererDansAdresse(Noeud* nouveau, Noeud* courant) ;
+        void desinsererDeAdresse(Noeud* p) ;
 
     };
 

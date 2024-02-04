@@ -69,7 +69,7 @@ namespace td3 {
      * @throw std::invalid_argument si position est non-valide
      */
     template<typename T>
-    void Liste<T>::ajouter(const T &valeur, const int &position) {
+    void Liste<T>::ajouter(const T &valeur, size_t position) {
         if (!positionEstValideEnEcriture(position)) throw std::invalid_argument("ajouter: index non-valide") ;
 
         auto nouveau = new Noeud(valeur) ;
@@ -100,7 +100,7 @@ namespace td3 {
      * @throw std::invalid_argument si la position est non-valide
      */
     template<typename T>
-    void Liste<T>::enlever(const int &position) {
+    void Liste<T>::enlever(size_t position) {
         if (!positionEstValideEnLecture(position)) throw std::invalid_argument("enlever: index non-valide") ;
 
         auto p = trouverAdresseAPosition(position) ;
@@ -148,7 +148,7 @@ namespace td3 {
      * @pre Position est comprise entre 1 et cardinal inclusivement.
      */
     template<typename T>
-    T Liste<T>::element(const int &position) const {
+    T Liste<T>::element(size_t position) const {
         if (!positionEstValideEnLecture(position)) throw std::invalid_argument("element: index non-valide") ;
         auto p = trouverAdresseAPosition(position) ;
         return p->donnee ;
@@ -172,16 +172,6 @@ namespace td3 {
     }
 
     /**
-     * Vérifie la validité de l'objet liste
-     * @tparam T
-     * @return true si l'invariant de classe est respecté
-     */
-    template<typename T>
-    bool Liste<T>::verifieInvariant() const {
-        return true ;
-    }
-
-    /**
      * Insère une représentation textuelle de la liste dans un stream d'IO.
      * @tparam U
      * @param os Stream d'IO
@@ -201,7 +191,7 @@ namespace td3 {
      * @return true si 0 <= pos <= cardinal
      */
     template<typename T>
-    bool Liste<T>::positionEstValideEnEcriture(int pos) const {
+    bool Liste<T>::positionEstValideEnEcriture(size_t pos) const {
         return (pos <= cardinal ) ;
     }
 
@@ -212,7 +202,7 @@ namespace td3 {
      * @return L'adresse du noeud à la position demandée
      */
     template<typename T>
-    typename Liste<T>::Noeud *Liste<T>::trouverAdresseAPosition(int pos) const {
+    typename Liste<T>::Noeud *Liste<T>::trouverAdresseAPosition(size_t pos) const {
         Noeud* adresse = premier->suivant ;
         for (int i = 0; i < pos; ++i) adresse = adresse->suivant ;
         return adresse ;
@@ -245,20 +235,10 @@ namespace td3 {
      * @return true si 0 <= pos < cardinal
      */
     template<typename T>
-    bool Liste<T>::positionEstValideEnLecture(int pos) const {
+    bool Liste<T>::positionEstValideEnLecture(size_t pos) const {
         return pos < cardinal ;
     }
 
-    /**
-     * Permet de reculer de la fin vers le début de n positions (utilisé dans l'invariant!!!)
-     * @tparam T
-     * @param position Nombre de sauts à faire
-     * @return L'adresse du noeud résultant
-     */
-    template<typename T>
-    typename Liste<T>::Noeud *Liste<T>::revAdresseAPosition(int position) const {
-        return nullptr;
-    }
 
     /**
      * Trouve l'adresse du noeud comportant la première occurrence de la clé à partir du début
