@@ -25,8 +25,13 @@ namespace td3 {
      * @param source
      */
     template<typename T>
-    Liste<T>::Liste(const Liste &source) {
-
+    Liste<T>::Liste(const Liste &source) : premier(new Noeud), dernier(new Noeud), cardinal(0) {
+        premier->suivant = dernier ;
+        dernier->precedent = premier ;
+        for (auto p = source.dernier->precedent; p != source.premier; p = p->precedent) {
+            auto donnee = p->donnee ;
+            ajouter(donnee, 0 ) ;
+        }
     }
 
     /**
@@ -35,7 +40,9 @@ namespace td3 {
      */
     template<typename T>
     Liste<T>::~Liste() {
-
+        while (!estVide()) enlever(0) ;
+        delete premier ;
+        delete dernier ;
     }
 
     /**
@@ -45,8 +52,11 @@ namespace td3 {
      * @return A = B assigne B à A et retourne A.
      */
     template<typename T>
-    Liste<T> &Liste<T>::operator=(const Liste<T> &rhs) {
-        return *this;
+    Liste<T> &Liste<T>::operator=(Liste<T> rhs) {
+        std::swap(premier, rhs.premier) ;
+        std::swap(dernier, rhs.dernier) ;
+        std::swap(cardinal, rhs.cardinal) ;
+        return *this ;
     }
 
     /**
@@ -55,7 +65,8 @@ namespace td3 {
      * @tparam T Type de l'élément ajouté
      * @param valeur Valeur de l'élément ajouté
      * @param position Position de l'ajout
-     * @pre position est compris entre 1 et cardinal+1 inclusivement.  Si la position est invalide la fonction ne fait rien.
+     * @pre position est compris entre 0 et cardinal inclusivement.
+     * @throw std::invalid_argument si position est non-valide
      */
     template<typename T>
     void Liste<T>::ajouter(const T &valeur, const int &position) {
@@ -63,11 +74,7 @@ namespace td3 {
 
         auto nouveau = new Noeud(valeur) ;
         auto courant = trouverAdresseAPosition(position) ;
-
-        nouveau->precedent = courant->precedent ;
-        courant->precedent->suivant = nouveau ;
-        nouveau->suivant = courant ;
-        courant->precedent = nouveau ;
+        insererDansAdresse(nouveau, courant) ;
 
         ++ cardinal ;
     }
@@ -80,18 +87,26 @@ namespace td3 {
      */
     template<typename T>
     void Liste<T>::enleverEl(const T &valeur) {
-
+        auto p = adresseDeLaCle(valeur) ;
+        if (p != nullptr) desinsererDeAdresse(p) ;
+        -- cardinal ;
     }
 
     /**
      * Enlever un élément de la liste.  Retire l'élément situé à une position donnée.
      * @tparam T Type dde données stockées dans la liste.
      * @param position Position à laquelle retire l'élément.
-     * @pre position est comprise entre 1 et cardinal.
+     * @pre position est comprise entre 0 et cardinal-1 inclusivement.
+     * @throw std::invalid_argument si la position est non-valide
      */
     template<typename T>
-    void Liste<T>::enleverPos(const int &position) {
+    void Liste<T>::enlever(const int &position) {
+        if (!positionEstValideEnLecture(position)) throw std::invalid_argument("enlever: index non-valide") ;
 
+        auto p = trouverAdresseAPosition(position) ;
+        desinsererDeAdresse(p) ;
+
+        -- cardinal ;
     }
 
     /**
@@ -122,7 +137,7 @@ namespace td3 {
      */
     template<typename T>
     bool Liste<T>::appartient(const T &valeur) const {
-        return false;
+        return position(valeur) == cardinal ;
     }
 
     /**
@@ -134,18 +149,26 @@ namespace td3 {
      */
     template<typename T>
     T Liste<T>::element(const int &position) const {
-        return nullptr;
+        if (!positionEstValideEnLecture(position)) throw std::invalid_argument("element: index non-valide") ;
+        auto p = trouverAdresseAPosition(position) ;
+        return p->donnee ;
     }
 
     /**
      * Détecte la position de la première occurrence de valeur dans la liste.
      * @tparam T
      * @param valeur
-     * @return L'indice où se trouve la valeur cherchée.  Si la valeur est absente de la liste, retourne cardinal+1
+     * @return L'indice où se trouve la valeur cherchée.  Si la valeur est absente de la liste, retourne cardinal.  Attention
+     * sur une liste vide, le résultat sera toujours 0.
      */
     template<typename T>
     int Liste<T>::position(const T &valeur) const {
-        return 0;
+        int i = 0 ;
+        for (Noeud* p = premier->suivant ; p != dernier ; p = p->suivant ) {
+            if (p->donnee == valeur) return i ;
+            ++ i ;
+        }
+        return i ;
     }
 
     /**
@@ -179,7 +202,7 @@ namespace td3 {
      */
     template<typename T>
     bool Liste<T>::positionEstValideEnEcriture(int pos) const {
-        return ((pos > 0) && (pos <= cardinal + 1)) ;
+        return (pos <= cardinal ) ;
     }
 
     /**
@@ -190,7 +213,7 @@ namespace td3 {
      */
     template<typename T>
     typename Liste<T>::Noeud *Liste<T>::trouverAdresseAPosition(int pos) const {
-        Noeud* adresse = premier ;
+        Noeud* adresse = premier->suivant ;
         for (int i = 0; i < pos; ++i) adresse = adresse->suivant ;
         return adresse ;
     }
@@ -223,7 +246,7 @@ namespace td3 {
      */
     template<typename T>
     bool Liste<T>::positionEstValideEnLecture(int pos) const {
-        return false;
+        return pos < cardinal ;
     }
 
     /**
@@ -245,7 +268,10 @@ namespace td3 {
      */
     template<typename T>
     typename Liste<T>::Noeud *Liste<T>::adresseDeLaCle(const T &cle) const {
-        return nullptr;
+        for (Noeud* p = premier->suivant ; p != dernier ; p = p->suivant ) {
+            if (p->donnee == cle) return p ;
+        }
+        return nullptr ;
     }
 
 
@@ -256,8 +282,11 @@ namespace td3 {
      * @param adresse Adresse où faire l'insertion
      */
     template<typename T>
-    void Liste<T>::insererDansAdresse(Liste::Noeud *noeud, Liste::Noeud *adresse) {
-
+    void Liste<T>::insererDansAdresse(Liste::Noeud *nouveau, Liste::Noeud *courant) {
+        nouveau->precedent = courant->precedent ;
+        courant->precedent->suivant = nouveau ;
+        nouveau->suivant = courant ;
+        courant->precedent = nouveau ;
     }
 
     /**
@@ -266,31 +295,11 @@ namespace td3 {
      * @param adresse Adresse du noeud à retirer
      */
     template<typename T>
-    void Liste<T>::desinsererDeAdresse(Liste::Noeud *adresse) {
-
+    void Liste<T>::desinsererDeAdresse(Liste::Noeud *p) {
+        p->precedent->suivant = p->suivant ;
+        p->suivant->precedent = p->precedent ;
+        delete p ;
     }
-
-    /**
-     * Copie tous les noeuds de rhs dans l'objet courant à partir de premier
-     * @tparam T
-     * @param rhs Liste à copier
-     * @pre L'objet courant est VIDE
-     */
-    template<typename T>
-    void Liste<T>::copier(const Liste<T> &rhs) {
-
-    }
-
-    /**
-     * Efface tous les noeuds de l'objet courant.
-     * @tparam T
-     */
-    template<typename T>
-    void Liste<T>::effacer() {
-
-    }
-
-
 }
 
 #endif //LISTE_MAIN_LISTE_IMPLANTATION_H
