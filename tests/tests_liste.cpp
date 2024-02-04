@@ -100,6 +100,11 @@ TEST_F(ListeTest, enleverEl) {
     EXPECT_EQ("[666, 888]", l5.format()) ;
 }
 
+TEST_F(ListeTest, appartient) {
+    EXPECT_TRUE(l5.appartient(888)) ;
+    EXPECT_FALSE(l5.appartient(555)) ;
+}
+
 
 
 

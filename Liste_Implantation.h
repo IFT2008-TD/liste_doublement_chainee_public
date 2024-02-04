@@ -137,7 +137,7 @@ namespace td3 {
      */
     template<typename T>
     bool Liste<T>::appartient(const T &valeur) const {
-        return position(valeur) == cardinal ;
+        return position(valeur) != cardinal ;
     }
 
     /**
