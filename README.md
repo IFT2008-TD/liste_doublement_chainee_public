@@ -69,7 +69,7 @@ votre implantation:
 - Destructeur: détruit la liste
 - ajouter: un nouvel élément est ajouté à la liste à une position valide
 - enlverEl: retire la première occurrence d'un élément de la liste
-- enleverPos: retire l'élément se trouvant à position demandée
+- enlever: retire l'élément se trouvant à position demandée
 - taille: compte les éléments
 - estVide: indique si la liste est vide
 - appartient: indique si un élément donné se trouve dans la liste
