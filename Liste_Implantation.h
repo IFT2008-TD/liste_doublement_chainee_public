@@ -14,7 +14,7 @@ namespace td3 {
      * @tparam T Type des données stockées dans la liste
      */
     template<typename T>
-    Liste<T>::Liste() : premier(new Noeud), dernier(new Noeud), cardinal(0) {
+    Liste<T>::Liste() : premier(new NoeudSentinelle), dernier(new NoeudSentinelle), cardinal(0) {
         premier->suivant = dernier ;
         dernier->precedent = premier ;
     }
@@ -189,8 +189,8 @@ namespace td3 {
      * @return L'adresse du noeud à la position demandée
      */
     template<typename T>
-    typename Liste<T>::Noeud *Liste<T>::trouverAdresseAPosition(int pos) const {
-        Noeud* adresse = premier ;
+    typename Liste<T>::NoeudSentinelle *Liste<T>::trouverAdresseAPosition(int pos) const {
+        NoeudSentinelle* adresse = premier ;
         for (int i = 0; i < pos; ++i) adresse = adresse->suivant ;
         return adresse ;
     }
@@ -206,8 +206,8 @@ namespace td3 {
 
         std::ostringstream os ;
         os << "[" ;
-        for (Noeud* p = premier->suivant ; p != dernier ; p = p->suivant ) {
-            os << p->donnee ;
+        for (NoeudSentinelle* p = premier->suivant ; p != dernier ; p = p->suivant ) {
+            os << p->lireCle() ;
             if (p->suivant != dernier) os << ", " ;
         }
         os << "]" ;

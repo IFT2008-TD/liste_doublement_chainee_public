@@ -46,29 +46,32 @@ namespace td3 {
 
     private:
 
+        struct NoeudSentinelle {
+            NoeudSentinelle *suivant ;
+            NoeudSentinelle *precedent ;
 
-        class Noeud {
-        public:
-            T donnee;
-            Noeud *suivant;
-            Noeud *precedent;
-
-            explicit Noeud () : donnee (), suivant (),  precedent () {} ;
-
-            explicit Noeud(const T &data_item, Noeud *next_ptr = nullptr, Noeud *prev_ptr = nullptr) :
-                    donnee(data_item), suivant(next_ptr), precedent(prev_ptr) {}
+            explicit NoeudSentinelle (NoeudSentinelle *adrSuivant = nullptr, NoeudSentinelle *adrPrec = nullptr) : suivant (adrSuivant), precedent (adrPrec) {} ;
+            virtual const T& lireCle() const {throw std::runtime_error("Une sentinelle ne possède pas de clé!") ; }
         };
 
 
-        Noeud *premier;
-        Noeud *dernier;
+        struct Noeud : public NoeudSentinelle {
+            T donnee;
+
+            explicit Noeud(const T &item, Noeud *adrSuivant = nullptr, Noeud *adrPrec = nullptr): NoeudSentinelle(adrSuivant, adrPrec), donnee(item) {}
+            const T& lireCle() const override {return donnee ; }
+        };
+
+
+        NoeudSentinelle *premier;
+        NoeudSentinelle *dernier;
         int cardinal;
 
         bool verifieInvariant() const;
 
         bool positionEstValideEnEcriture(int pos) const  ;
         bool positionEstValideEnLecture(int pos) const ;
-        Noeud* trouverAdresseAPosition(int pos) const ;
+        NoeudSentinelle* trouverAdresseAPosition(int pos) const ;
         Noeud* revAdresseAPosition(int position) const ;
         Noeud* adresseDeLaCle(const T& cle) const ;
 
