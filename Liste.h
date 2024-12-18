@@ -52,6 +52,7 @@ namespace td3 {
 
             explicit NoeudSentinelle (NoeudSentinelle *adrSuivant = nullptr, NoeudSentinelle *adrPrec = nullptr) : suivant (adrSuivant), precedent (adrPrec) {} ;
             virtual const T& lireCle() const {throw std::runtime_error("Une sentinelle ne possède pas de clé!") ; }
+            virtual ~NoeudSentinelle() = default;
         };
 
 

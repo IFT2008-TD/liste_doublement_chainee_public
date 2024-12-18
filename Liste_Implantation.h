@@ -35,7 +35,7 @@ namespace td3 {
      */
     template<typename T>
     Liste<T>::~Liste() {
-
+        while (!estVide()) enleverPos(0) ;
     }
 
     /**
@@ -46,7 +46,10 @@ namespace td3 {
      */
     template<typename T>
     Liste<T> &Liste<T>::operator=(const Liste<T> &rhs) {
-        return *this;
+        using std::swap ;
+        swap(premier, rhs.premier) ;
+        swap(dernier, rhs.dernier) ;
+        swap(cardinal, rhs.cardinal) ;
     }
 
     /**
@@ -111,7 +114,7 @@ namespace td3 {
      */
     template<typename T>
     bool Liste<T>::estVide() const {
-        return (cardinal == 0) ;
+        return (taille() == 0) ;
     }
 
     /**
