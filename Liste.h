@@ -21,13 +21,13 @@ namespace td3 {
 
         ~Liste();
 
-        Liste<T> &operator=(const Liste<T> &);
+        Liste<T> &operator=(Liste<T> );
 
         void ajouter(const T &, const int &);
 
         void enleverEl(const T &);
 
-        void enleverPos(const int &);
+        void enleverPos(size_t);
 
         int taille() const;
 
@@ -37,7 +37,7 @@ namespace td3 {
 
         T element(const int &) const;
 
-        int position(const T &) const;
+        size_t position(const T &) const;
 
 
         template<class U>
@@ -66,20 +66,19 @@ namespace td3 {
 
         NoeudSentinelle *premier;
         NoeudSentinelle *dernier;
-        int cardinal;
+        int cardinal{};
 
-        bool verifieInvariant() const;
+        bool invariant() const;
 
         bool positionEstValideEnEcriture(int pos) const  ;
-        bool positionEstValideEnLecture(int pos) const ;
+        bool positionEstValideEnLecture(size_t pos) const ;
         NoeudSentinelle* trouverAdresseAPosition(int pos) const ;
         Noeud* revAdresseAPosition(int position) const ;
-        Noeud* adresseDeLaCle(const T& cle) const ;
+        NoeudSentinelle * localiserLaCle(const T& cle) const ;
 
-        void insererDansAdresse(Noeud* noeud, Noeud* adresse) ;
-        void desinsererDeAdresse(Noeud* adresse) ;
-        void copier(const Liste<T>& rhs) ;
-        void effacer() ;
+        void insererDansAdresse(NoeudSentinelle *noeud, NoeudSentinelle *adresse) ;
+        void desinsererDeAdresse(NoeudSentinelle *adresse) ;
+
 
 
 

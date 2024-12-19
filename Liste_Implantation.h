@@ -17,6 +17,8 @@ namespace td3 {
     Liste<T>::Liste() : premier(new NoeudSentinelle), dernier(new NoeudSentinelle), cardinal(0) {
         premier->suivant = dernier ;
         dernier->precedent = premier ;
+
+        assert(invariant()) ;
     }
 
     /**
@@ -25,8 +27,10 @@ namespace td3 {
      * @param source
      */
     template<typename T>
-    Liste<T>::Liste(const Liste &source) {
+    Liste<T>::Liste(const Liste &source) : Liste() {
+        for (NoeudSentinelle* p = source.premier->suivant; p!= source.dernier; p = p->suivant) ajouter(p->lireCle(), taille()) ;
 
+        assert(invariant()) ;
     }
 
     /**
@@ -36,6 +40,8 @@ namespace td3 {
     template<typename T>
     Liste<T>::~Liste() {
         while (!estVide()) enleverPos(0) ;
+
+        assert(invariant()) ;
     }
 
     /**
@@ -45,11 +51,14 @@ namespace td3 {
      * @return A = B assigne B à A et retourne A.
      */
     template<typename T>
-    Liste<T> &Liste<T>::operator=(const Liste<T> &rhs) {
+    Liste<T> &Liste<T>::operator=(Liste<T> rhs) {
         using std::swap ;
         swap(premier, rhs.premier) ;
         swap(dernier, rhs.dernier) ;
         swap(cardinal, rhs.cardinal) ;
+
+        assert(invariant()) ;
+        return *this ;
     }
 
     /**
@@ -67,12 +76,10 @@ namespace td3 {
         auto nouveau = new Noeud(valeur) ;
         auto courant = trouverAdresseAPosition(position) ;
 
-        nouveau->precedent = courant->precedent ;
-        courant->precedent->suivant = nouveau ;
-        nouveau->suivant = courant ;
-        courant->precedent = nouveau ;
+        insererDansAdresse(nouveau, courant) ;
 
         ++ cardinal ;
+        assert(invariant()) ;
     }
 
     /**
@@ -83,7 +90,12 @@ namespace td3 {
      */
     template<typename T>
     void Liste<T>::enleverEl(const T &valeur) {
+        auto courant = localiserLaCle(valeur) ;
+        if (courant == dernier) throw std::invalid_argument("enleverEl: clé absente de la liste") ;
+        desinsererDeAdresse(courant) ;
 
+        -- cardinal ;
+        assert(invariant()) ;
     }
 
     /**
@@ -93,8 +105,14 @@ namespace td3 {
      * @pre position est comprise entre 1 et cardinal.
      */
     template<typename T>
-    void Liste<T>::enleverPos(const int &position) {
+    void Liste<T>::enleverPos(size_t position) {
+        if (!positionEstValideEnLecture(position)) throw std::invalid_argument("enlever: index non-valide") ;
 
+        auto courant = trouverAdresseAPosition(position) ;
+        desinsererDeAdresse(courant) ;
+
+        -- cardinal ;
+        assert(invariant()) ;
     }
 
     /**
@@ -125,7 +143,7 @@ namespace td3 {
      */
     template<typename T>
     bool Liste<T>::appartient(const T &valeur) const {
-        return false;
+        return localiserLaCle(valeur) != dernier ;
     }
 
     /**
@@ -137,18 +155,26 @@ namespace td3 {
      */
     template<typename T>
     T Liste<T>::element(const int &position) const {
-        return nullptr;
+        if (!positionEstValideEnLecture(position)) throw std::invalid_argument("element: index non-valide") ;
+
+        auto courant = trouverAdresseAPosition(position) ;
+        return courant->lireCle() ;
     }
 
     /**
      * Détecte la position de la première occurrence de valeur dans la liste.
      * @tparam T
      * @param valeur
-     * @return L'indice où se trouve la valeur cherchée.  Si la valeur est absente de la liste, retourne cardinal+1
+     * @return L'indice où se trouve la valeur cherchée.  Si la valeur est absente de la liste, retourne cardinal
      */
     template<typename T>
-    int Liste<T>::position(const T &valeur) const {
-        return 0;
+    size_t Liste<T>::position(const T &valeur) const {
+        size_t i = 0 ;
+        for (auto p = premier->suivant; p != dernier; p = p->suivant) {
+            if (p->lireCle() == valeur) return i ;
+            ++i ;
+        }
+        return taille() ;
     }
 
     /**
@@ -157,8 +183,14 @@ namespace td3 {
      * @return true si l'invariant de classe est respecté
      */
     template<typename T>
-    bool Liste<T>::verifieInvariant() const {
-        return true ;
+    bool Liste<T>::invariant() const {
+        auto p = premier->suivant ;
+        auto d = dernier->precedent ;
+        for (auto i = 0; i < cardinal; ++i) {
+            p = p->suivant ;
+            d = d->precedent ;
+        }
+        return p == dernier && d == premier ;
     }
 
     /**
@@ -182,7 +214,7 @@ namespace td3 {
      */
     template<typename T>
     bool Liste<T>::positionEstValideEnEcriture(int pos) const {
-        return ((pos > 0) && (pos <= cardinal + 1)) ;
+        return (pos < cardinal + 1) ;
     }
 
     /**
@@ -193,7 +225,7 @@ namespace td3 {
      */
     template<typename T>
     typename Liste<T>::NoeudSentinelle *Liste<T>::trouverAdresseAPosition(int pos) const {
-        NoeudSentinelle* adresse = premier ;
+        NoeudSentinelle* adresse = premier->suivant ;
         for (int i = 0; i < pos; ++i) adresse = adresse->suivant ;
         return adresse ;
     }
@@ -225,8 +257,8 @@ namespace td3 {
      * @return true si 0 <= pos < cardinal
      */
     template<typename T>
-    bool Liste<T>::positionEstValideEnLecture(int pos) const {
-        return false;
+    bool Liste<T>::positionEstValideEnLecture(size_t pos) const {
+        return pos < taille() ;
     }
 
     /**
@@ -247,8 +279,9 @@ namespace td3 {
      * @return L'adresse du premier noeud contenant la clé cherchée, sinon nullptr
      */
     template<typename T>
-    typename Liste<T>::Noeud *Liste<T>::adresseDeLaCle(const T &cle) const {
-        return nullptr;
+    typename Liste<T>::NoeudSentinelle * Liste<T>::localiserLaCle(const T &cle) const {
+        for (auto p = premier->suivant; p != dernier; p = p->suivant) if (p->lireCle() == cle) return p ;
+        return dernier ;
     }
 
 
@@ -259,8 +292,11 @@ namespace td3 {
      * @param adresse Adresse où faire l'insertion
      */
     template<typename T>
-    void Liste<T>::insererDansAdresse(Liste::Noeud *noeud, Liste::Noeud *adresse) {
-
+    void Liste<T>::insererDansAdresse(NoeudSentinelle *noeud, NoeudSentinelle *adresse) {
+        noeud->precedent = adresse->precedent ;
+        adresse->precedent->suivant = noeud ;
+        noeud->suivant = adresse ;
+        adresse->precedent = noeud ;
     }
 
     /**
@@ -269,30 +305,12 @@ namespace td3 {
      * @param adresse Adresse du noeud à retirer
      */
     template<typename T>
-    void Liste<T>::desinsererDeAdresse(Liste::Noeud *adresse) {
+    void Liste<T>::desinsererDeAdresse(NoeudSentinelle *adresse) {
+        adresse->suivant->precedent = adresse->precedent ;
+        adresse->precedent->suivant = adresse->suivant ;
+        delete adresse ;
 
     }
-
-    /**
-     * Copie tous les noeuds de rhs dans l'objet courant à partir de premier
-     * @tparam T
-     * @param rhs Liste à copier
-     * @pre L'objet courant est VIDE
-     */
-    template<typename T>
-    void Liste<T>::copier(const Liste<T> &rhs) {
-
-    }
-
-    /**
-     * Efface tous les noeuds de l'objet courant.
-     * @tparam T
-     */
-    template<typename T>
-    void Liste<T>::effacer() {
-
-    }
-
 
 }
 
