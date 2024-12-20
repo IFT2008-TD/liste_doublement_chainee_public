@@ -70,7 +70,7 @@ TEST(Liste, ajouter_deux_elements_ordre_inverse_format_correct) {
 TEST(Liste, ajouter_et_supprimer_un_element) {
     Liste<int> l ;
     l.ajouter(666, 0) ;
-    l.enleverPos(0) ;
+    l.enlever(0) ;
     EXPECT_TRUE(l.estVide()) ;
 
 }
@@ -80,7 +80,7 @@ TEST_F(ListeTest, dispositif_bien_construit) {
 }
 
 TEST_F(ListeTest, suppression_a_1) {
-    l5.enleverPos(1) ;
+    l5.enlever(1) ;
     EXPECT_EQ("[666, 888]", l5.format()) ;
 }
 
@@ -96,7 +96,7 @@ TEST_F(ListeTest, assignation) {
 }
 
 TEST_F(ListeTest, enleverEl) {
-    l5.enleverEl(777) ;
+    l5.enleverElement(777) ;
     EXPECT_EQ("[666, 888]", l5.format()) ;
 }
 

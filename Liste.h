@@ -21,13 +21,13 @@ namespace td3 {
 
         ~Liste();
 
-        Liste<T> &operator=(Liste<T> );
+        Liste &operator=(Liste );
 
         void ajouter(const T &, const int &);
 
-        void enleverEl(const T &);
+        void enleverElement(const T &);
 
-        void enleverPos(size_t);
+        void enlever(size_t);
 
         int taille() const;
 
@@ -56,7 +56,7 @@ namespace td3 {
         };
 
 
-        struct Noeud : public NoeudSentinelle {
+        struct Noeud : NoeudSentinelle {
             T donnee;
 
             explicit Noeud(const T &item, Noeud *adrSuivant = nullptr, Noeud *adrPrec = nullptr): NoeudSentinelle(adrSuivant, adrPrec), donnee(item) {}
@@ -66,18 +66,18 @@ namespace td3 {
 
         NoeudSentinelle *premier;
         NoeudSentinelle *dernier;
-        int cardinal{};
+        size_t cardinal{};
 
         bool invariant() const;
 
         bool positionEstValideEnEcriture(int pos) const  ;
         bool positionEstValideEnLecture(size_t pos) const ;
         NoeudSentinelle* trouverAdresseAPosition(int pos) const ;
-        Noeud* revAdresseAPosition(int position) const ;
         NoeudSentinelle * localiserLaCle(const T& cle) const ;
 
-        void insererDansAdresse(NoeudSentinelle *noeud, NoeudSentinelle *adresse) ;
-        void desinsererDeAdresse(NoeudSentinelle *adresse) ;
+        static void insererDansAdresse(NoeudSentinelle *noeud, NoeudSentinelle *adresse) ;
+
+        static void desinsererDeAdresse(NoeudSentinelle *adresse) ;
 
 
 

@@ -39,7 +39,7 @@ namespace td3 {
      */
     template<typename T>
     Liste<T>::~Liste() {
-        while (!estVide()) enleverPos(0) ;
+        while (!estVide()) enlever(0) ;
 
         assert(invariant()) ;
     }
@@ -89,7 +89,7 @@ namespace td3 {
      * @param valeur Valeur à enlever et retirer de la liste.
      */
     template<typename T>
-    void Liste<T>::enleverEl(const T &valeur) {
+    void Liste<T>::enleverElement(const T &valeur) {
         auto courant = localiserLaCle(valeur) ;
         if (courant == dernier) throw std::invalid_argument("enleverEl: clé absente de la liste") ;
         desinsererDeAdresse(courant) ;
@@ -105,7 +105,7 @@ namespace td3 {
      * @pre position est comprise entre 1 et cardinal.
      */
     template<typename T>
-    void Liste<T>::enleverPos(size_t position) {
+    void Liste<T>::enlever(size_t position) {
         if (!positionEstValideEnLecture(position)) throw std::invalid_argument("enlever: index non-valide") ;
 
         auto courant = trouverAdresseAPosition(position) ;
@@ -261,16 +261,6 @@ namespace td3 {
         return pos < taille() ;
     }
 
-    /**
-     * Permet de reculer de la fin vers le début de n positions (utilisé dans l'invariant!!!)
-     * @tparam T
-     * @param position Nombre de sauts à faire
-     * @return L'adresse du noeud résultant
-     */
-    template<typename T>
-    typename Liste<T>::Noeud *Liste<T>::revAdresseAPosition(int position) const {
-        return nullptr;
-    }
 
     /**
      * Trouve l'adresse du noeud comportant la première occurrence de la clé à partir du début
